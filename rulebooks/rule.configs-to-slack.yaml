@@ -1,0 +1,16 @@
+- name: Listen to Pod and Deployment Events
+  hosts: all
+  execution_strategy: sequential
+  sources:
+    - sabre1041.eda.k8s:
+        api_version: v1
+        kind: ConfigMap
+        namespace: "{{ watched_namespace }}"
+  rules:
+    - name: Send Resource to Slack & Print to stdout
+      condition: event.type is defined
+      actions:
+        - run_playbook:
+            name: playbook.resource-to-slack.yaml
+        - print_event:
+            pretty: true
